@@ -21,7 +21,11 @@ public class StudentService {
         return mapper.getById(id);
     }
 
-    public Student getByLike(String partOfName){
+    public List<Student> getByLike(String partOfName){
         return mapper.getByLike(partOfName);
+    }
+
+    public int insert(Student student){
+        return mapper.insert(student);
     }
 }

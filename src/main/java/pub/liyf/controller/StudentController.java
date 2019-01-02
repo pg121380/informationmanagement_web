@@ -1,10 +1,7 @@
 package pub.liyf.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pub.liyf.bean.Student;
 import pub.liyf.service.StudentService;
 
@@ -23,13 +20,24 @@ public class StudentController {
     }
 
     @GetMapping("/getById/{id}")
+    @ResponseBody
     public Student getById(@PathVariable("id") String id){
         return studentService.getById(id);
     }
 
     @GetMapping("/getByLike/{partOfName}")
-    public Student getByLike(@PathVariable("partOfName") String partOfName){
+    @ResponseBody
+    public List<Student> getByLike(@PathVariable("partOfName") String partOfName){
+
         return studentService.getByLike(partOfName);
+    }
+
+
+    @PostMapping("/add")
+    @ResponseBody
+    public int insert(Student student){
+        System.out.println(student);
+        return studentService.insert(student);
     }
 
 }
