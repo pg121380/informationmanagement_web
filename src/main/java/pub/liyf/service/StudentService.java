@@ -28,4 +28,12 @@ public class StudentService {
     public int insert(Student student){
         return mapper.insert(student);
     }
+
+    public int deleteById(String id){
+        return mapper.deleteById(id);
+    }
+
+    public int update(Student student){
+        return mapper.update(student);
+    }
 }

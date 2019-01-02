@@ -36,8 +36,18 @@ public class StudentController {
     @PostMapping("/add")
     @ResponseBody
     public int insert(Student student){
-        System.out.println(student);
         return studentService.insert(student);
     }
 
+    @GetMapping("/delete/{id}")
+    @ResponseBody
+    public int deleteById(@PathVariable("id") String id){
+        return studentService.deleteById(id);
+    }
+
+    @PostMapping("/update")
+    @ResponseBody
+    public int update(Student student){
+        return studentService.update(student);
+    }
 }
