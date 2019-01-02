@@ -13,19 +13,19 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
-    @GetMapping("/list")
+    @GetMapping("/student/list")
     @ResponseBody
-    public List<Student> getAll(){
+    public List<Student> getAllStudent(){
         return studentService.getAll();
     }
 
-    @GetMapping("/getById/{id}")
+    @GetMapping("/student/getById/{id}")
     @ResponseBody
     public Student getById(@PathVariable("id") String id){
         return studentService.getById(id);
     }
 
-    @GetMapping("/getByLike/{partOfName}")
+    @GetMapping("/student/getByLike/{partOfName}")
     @ResponseBody
     public List<Student> getByLike(@PathVariable("partOfName") String partOfName){
 
@@ -33,19 +33,19 @@ public class StudentController {
     }
 
 
-    @PostMapping("/add")
+    @PostMapping("/student/add")
     @ResponseBody
     public int insert(Student student){
         return studentService.insert(student);
     }
 
-    @GetMapping("/delete/{id}")
+    @GetMapping("/student/delete/{id}")
     @ResponseBody
     public int deleteById(@PathVariable("id") String id){
         return studentService.deleteById(id);
     }
 
-    @PostMapping("/update")
+    @PostMapping("/student/update")
     @ResponseBody
     public int update(Student student){
         return studentService.update(student);
