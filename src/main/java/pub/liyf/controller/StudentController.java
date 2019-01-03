@@ -1,53 +1,64 @@
 package pub.liyf.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import pub.liyf.bean.Employee;
 import pub.liyf.bean.Student;
 import pub.liyf.service.StudentService;
 
 import java.util.List;
 
-@RestController
+@Controller
 public class StudentController {
 
     @Autowired
     private StudentService studentService;
 
-    @GetMapping("/student/list")
-    @ResponseBody
-    public List<Student> getAllStudent(){
-        return studentService.getAll();
+    @RequestMapping("/student/list")
+    public String getAllStudent(Model model){
+        List<Student> students = studentService.getAll();
+        model.addAttribute("students", students);
+        return "student";
     }
 
-    @GetMapping("/student/getById/{id}")
-    @ResponseBody
-    public Student getById(@PathVariable("id") String id){
-        return studentService.getById(id);
+    @RequestMapping("/student/getById")
+    public String getById(@RequestParam("id") String id, Model model){
+        Student student = studentService.getById(id);
+        model.addAttribute("students", student);
+        return "student";
     }
 
-    @GetMapping("/student/getByLike/{partOfName}")
-    @ResponseBody
-    public List<Student> getByLike(@PathVariable("partOfName") String partOfName){
-
-        return studentService.getByLike(partOfName);
+    @RequestMapping("/student/getByLike")
+    public String getByLike(@RequestParam("partOfName") String partOfName, Model model){
+        System.out.println("hello");
+        List<Student> students = studentService.getByLike(partOfName);
+        model.addAttribute("students", students);
+        return "student";
     }
 
 
-    @PostMapping("/student/add")
-    @ResponseBody
-    public int insert(Student student){
-        return studentService.insert(student);
+    @RequestMapping("/student/insert")
+    public String insert(Student student, Model model){
+        studentService.insert(student);
+        List<Student> students = studentService.getAll();
+        model.addAttribute("students", students);
+        return "student";
     }
 
-    @GetMapping("/student/delete/{id}")
-    @ResponseBody
-    public int deleteById(@PathVariable("id") String id){
-        return studentService.deleteById(id);
+    @RequestMapping("/student/delete")
+    public String deleteById(@RequestParam("id") String id, Model model){
+        studentService.deleteById(id);
+        List<Student> students = studentService.getAll();
+        model.addAttribute("students", students);
+        return "student";
     }
 
-    @PostMapping("/student/update")
-    @ResponseBody
-    public int update(Student student){
-        return studentService.update(student);
+    @RequestMapping("/student/update")
+    public String update(Student student, Model model){
+        studentService.update(student);
+        model.addAttribute("students", studentService.getAll());
+        return "student";
     }
 }

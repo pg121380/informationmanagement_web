@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import pub.liyf.bean.Employee;
 import pub.liyf.service.EmployeeService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -23,23 +24,29 @@ public class EmployeeController {
         return "employee";
     }
 
-    @RequestMapping("/employee/getById/{id}")
-    @ResponseBody
-    public Employee getEmployeeById(@PathVariable("id") String id){
-        return employeeService.getEmployeeById(id);
+    @RequestMapping("/employee/getById")
+    public String getEmployeeById(@RequestParam("id") String id, Model model){
+        List<Employee> employees = new ArrayList<>();
+        Employee employee = employeeService.getEmployeeById(id);
+        employees.add(employee);
+        model.addAttribute("employees", employees);
+        return "employee";
     }
 
 
-    @RequestMapping("/employee/getByLike/{partOfName}")
-    @ResponseBody
-    public List<Employee> getEmployeeByLike(@PathVariable("partOfName") String partOfName){
-        return employeeService.getEmployeeByLike(partOfName);
+    @RequestMapping("/employee/getByLike")
+    public String getEmployeeByLike(@RequestParam("partOfName") String partOfName, Model model){
+        List<Employee> employees = employeeService.getEmployeeByLike(partOfName);
+        model.addAttribute("employees", employees);
+        return "employee";
     }
 
     @RequestMapping("/employee/insert")
-    @ResponseBody
-    public int insert(Employee employee){
-        return employeeService.insert(employee);
+    public String insert(Employee employee, Model model){
+        employeeService.insert(employee);
+        List<Employee> list = employeeService.getAll();
+        model.addAttribute("employees", list);
+        return "employee";
     }
 
 
@@ -52,8 +59,9 @@ public class EmployeeController {
     }
 
     @RequestMapping("/employee/update")
-    @ResponseBody
-    public int update(Employee employee){
-        return employeeService.update(employee);
+    public String update(Employee employee, Model model){
+        employeeService.update(employee);
+        model.addAttribute("employees", employeeService.getAll());
+        return "employee";
     }
 }
