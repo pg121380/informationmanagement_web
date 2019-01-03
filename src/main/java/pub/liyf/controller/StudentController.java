@@ -14,7 +14,7 @@ import java.util.List;
 
 @Controller
 public class StudentController {
-
+    //TODO:添加健壮性
     @Autowired
     private StudentService studentService;
 
@@ -39,6 +39,9 @@ public class StudentController {
     public String getByLike(@RequestParam("partOfName") String partOfName, Model model){
         System.out.println("hello");
         List<Student> students = studentService.getByLike(partOfName);
+        if(students.isEmpty()){
+            model.addAttribute("msg", new Msg("没有找到名字中带有" + partOfName + "的学生"));
+        }
         model.addAttribute("students", students);
         return "student";
     }
@@ -62,7 +65,12 @@ public class StudentController {
 
     @RequestMapping("/student/update")
     public String update(Student student, Model model){
-        studentService.update(student);
+        int reflect = studentService.update(student);
+        if(reflect == 0){
+            model.addAttribute("msg", new Msg("没有找到id为" + student.getId() + "的学生！修改失败！"));
+        } else {
+            model.addAttribute("msg", new Msg("修改成功！"));
+        }
         model.addAttribute("students", studentService.getAll());
         return "student";
     }
