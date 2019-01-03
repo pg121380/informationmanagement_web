@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import pub.liyf.bean.Employee;
+import pub.liyf.bean.JSONCheck;
 import pub.liyf.bean.Student;
 import pub.liyf.service.StudentService;
 
@@ -60,5 +61,16 @@ public class StudentController {
         studentService.update(student);
         model.addAttribute("students", studentService.getAll());
         return "student";
+    }
+
+    @RequestMapping("/student/checkDuplicated")
+    @ResponseBody
+    public JSONCheck checkDuplicated(@RequestParam("id") String id){
+        Student student = studentService.getById(id);
+        if(student == null){
+            return new JSONCheck(id + "1", id);
+        }else {
+            return new JSONCheck(student.getId(), id);
+        }
     }
 }
