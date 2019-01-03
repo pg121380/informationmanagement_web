@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import pub.liyf.bean.Employee;
 import pub.liyf.bean.JSONCheck;
+import pub.liyf.bean.Msg;
 import pub.liyf.bean.Student;
 import pub.liyf.service.StudentService;
 
@@ -27,6 +28,9 @@ public class StudentController {
     @RequestMapping("/student/getById")
     public String getById(@RequestParam("id") String id, Model model){
         Student student = studentService.getById(id);
+        if(student == null){
+            model.addAttribute("msg", new Msg("没有找到学号为" + id + "的学生"));
+        }
         model.addAttribute("students", student);
         return "student";
     }
