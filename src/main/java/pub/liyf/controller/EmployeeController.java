@@ -1,51 +1,57 @@
 package pub.liyf.controller;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import pub.liyf.bean.Employee;
 import pub.liyf.service.EmployeeService;
 
 import java.util.List;
 
-@RestController
+@Controller
 public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
 
-    @GetMapping("/employee/list")
-    @ResponseBody
-    public List<Employee> getAll(){
-        return employeeService.getAll();
+    @RequestMapping("/employee/list")
+    public String getAll(Model model){
+        List<Employee> employees = employeeService.getAll();
+        model.addAttribute("employees", employees);
+        return "employee";
     }
 
-    @GetMapping("/employee/getById/{id}")
+    @RequestMapping("/employee/getById/{id}")
     @ResponseBody
     public Employee getEmployeeById(@PathVariable("id") String id){
         return employeeService.getEmployeeById(id);
     }
 
 
-    @GetMapping("/employee/getByLike/{partOfName}")
+    @RequestMapping("/employee/getByLike/{partOfName}")
     @ResponseBody
     public List<Employee> getEmployeeByLike(@PathVariable("partOfName") String partOfName){
         return employeeService.getEmployeeByLike(partOfName);
     }
 
-    @PostMapping("/employee/insert")
+    @RequestMapping("/employee/insert")
     @ResponseBody
     public int insert(Employee employee){
         return employeeService.insert(employee);
     }
 
 
-    @ResponseBody
-    @GetMapping("/employee/delete/{id}")
-    public int deleteById(@PathVariable("id") String id){
-        return employeeService.deleteById(id);
+    @RequestMapping("/employee/delete")
+    public String deleteById(@RequestParam("id") String id,Model model){
+        employeeService.deleteById(id);
+        List<Employee> list = employeeService.getAll();
+        model.addAttribute("employees", list);
+        return "employee";
     }
 
-    @PostMapping("/employee/update")
+    @RequestMapping("/employee/update")
     @ResponseBody
     public int update(Employee employee){
         return employeeService.update(employee);
