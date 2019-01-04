@@ -28,6 +28,32 @@
                         }
                     });
                 });
+                var $editIdInput = $("#editIDInput");
+                $editIdInput.change(function () {
+                    $.ajax({
+                        url: BaseUrl + "/employee/showBack",
+                        data: "id=" + this.value,
+                        type: "GET",
+                        dataType: "JSON",
+                        success: function (data) {
+
+                            $("#editNameInput").attr("value",data.name);
+                            $("#editAgeInput").attr("value",data.age);
+                            $("#editSalaryInput").attr("value",data.salary);
+                            $("#editJobInput").attr("value",data.job);
+
+                            if(data.name == "此姓名不存在！！！！！！！"){
+                                $("#edit_submit_btn").addClass("disabled");
+                                alert("输入的id不存在！")
+                            } else {
+                                $("#edit_submit_btn").attr("class","btn btn-success");
+                            }
+                        }
+                    })
+                });
+                $("[delete_btn]").click(function () {
+                    return confirm("确认删除？");
+                })
             })
         </script>
     </head>
@@ -43,17 +69,19 @@
         <li class="active">Employee</li>
     </ol>
     <div class="row">
-        <div class="col-md-6 col-md-offset-3">
+        <div class="col-md-8 col-md-offset-3">
             <a href="/employee/list" class="btn btn-info">获取所有职工信息</a>
             <button type="button" class="btn btn-info" data-toggle="modal" data-target="#selectModal">根据ID查询职工信息</button>
             <button type="button" data-toggle="modal" data-target="#selectByLikeModal" class="btn btn-info">根据姓名查询职工信息</button>
             <button type="button" class="btn btn-info" data-toggle="modal" data-target="#addModal">添加职工信息</button>
+            <button type="button" data-toggle="modal" data-target="#editModal" class="btn btn-info">修改职工信息</button>
             <a class="btn btn-warning" href="http://localhost:8080">回到首页</a>
         </div>
     </div>
     <div class="row" th:if="${msg} ne null">
-        <div class="col-md-3 col-md-offset-4">
-            <div class="alert alert-danger text-center" role="alert" th:text="${msg.message}"> </div>
+        <div class="alert alert-danger alert-dismissible col-md-3 col-md-offset-4 text-center" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong th:text="${msg.message}"></strong>
         </div>
     </div>
 
@@ -80,8 +108,7 @@
                                 <td th:text="${employee.salary}"></td>
                                 <td th:text="${employee.job}"></td>
                                 <td>
-                                    <button type="button" data-toggle="modal" data-target="#editModal" class="btn btn-primary">修改</button>
-                                    <a th:href="@{/employee/delete(id=${employee.id})}" class="btn btn-danger">删除</a>
+                                    <a th:attr="delete_btn='true'" th:href="@{/employee/delete(id=${employee.id})}" class="btn btn-danger">删除</a>
                                 </td>
                             </tr>
                         </tbody>
@@ -202,7 +229,7 @@
                             <label for="editJobInput">职位</label>
                             <input type="text" class="form-control" id="editJobInput" name="job" placeholder="如：教师"/>
                         </div>
-                        <input type="submit" value="修改" class="btn btn-success"/>
+                        <input id="edit_submit_btn" type="submit" value="修改" class="btn btn-success"/>
                     </form>
                 </div>
                 <div class="modal-footer">

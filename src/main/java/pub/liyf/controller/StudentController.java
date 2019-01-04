@@ -21,12 +21,20 @@ public class StudentController {
     @RequestMapping("/student/list")
     public String getAllStudent(Model model){
         List<Student> students = studentService.getAll();
-        model.addAttribute("students", students);
+        if(students.isEmpty()){
+            model.addAttribute("msg", new Msg("数据库中还没有学生数据，请先进行增加操作！"));
+        } else {
+            model.addAttribute("students", students);
+        }
         return "student";
     }
 
     @RequestMapping("/student/getById")
     public String getById(@RequestParam("id") String id, Model model){
+        if(id.trim().equals("")){
+            model.addAttribute("msg", new Msg("id不能为空！"));
+            return "student";
+        }
         Student student = studentService.getById(id);
         if(student == null){
             model.addAttribute("msg", new Msg("没有找到学号为" + id + "的学生"));
@@ -37,7 +45,10 @@ public class StudentController {
 
     @RequestMapping("/student/getByLike")
     public String getByLike(@RequestParam("partOfName") String partOfName, Model model){
-        System.out.println("hello");
+        if(partOfName.trim().equals("")){
+            model.addAttribute("msg", new Msg("名字不能为空！"));
+            return "student";
+        }
         List<Student> students = studentService.getByLike(partOfName);
         if(students.isEmpty()){
             model.addAttribute("msg", new Msg("没有找到名字中带有" + partOfName + "的学生"));
@@ -49,6 +60,14 @@ public class StudentController {
 
     @RequestMapping("/student/insert")
     public String insert(Student student, Model model){
+        if(student.getId().trim().equals("")){
+            model.addAttribute("msg", new Msg("id不能为空！"));
+            return "student";
+        }
+        if(studentService.getById(student.getId()) != null){
+            model.addAttribute("msg", new Msg("输入的id已重复！"));
+            return "student";
+        }
         studentService.insert(student);
         List<Student> students = studentService.getAll();
         model.addAttribute("students", students);
@@ -83,6 +102,17 @@ public class StudentController {
             return new JSONCheck(id + "1", id);
         }else {
             return new JSONCheck(student.getId(), id);
+        }
+    }
+
+    @RequestMapping("/student/showBack")
+    @ResponseBody
+    public Student AjaxShowBack(@RequestParam("id") String id){
+        Student student = studentService.getById(id);
+        if (student == null){
+            return new Student(id, "此姓名不存在！！！！！！！", 0, 0.0);
+        } else {
+            return student;
         }
     }
 }

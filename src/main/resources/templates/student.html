@@ -17,8 +17,6 @@
                     type: "GET",
                     dataType: "JSON",
                     success: function (data) {
-                        console.log(data.checkId);
-                        console.log(data.selectId)
                         if(data.checkId == data.selectId){
                             $("#submit_btn").addClass("disabled");
                             alert("ID重复啦！");
@@ -28,6 +26,33 @@
                     }
                 });
             });
+            
+            var $editIdInput = $("#editIDInput");
+            $editIdInput.change(function () {
+               $.ajax({
+                   url: BaseUrl + "/student/showBack",
+                   data: "id=" + this.value,
+                   type: "GET",
+                   dataType: "JSON",
+                   success: function (data) {
+
+                       $("#editNameInput").attr("value",data.name);
+                       $("#editAgeInput").attr("value",data.age);
+                       $("#editScoreInput").attr("value",data.score);
+
+                       if(data.name == "此姓名不存在！！！！！！！"){
+                           $("#edit_submit_btn").addClass("disabled");
+                           alert("输入的id不存在！")
+                       } else {
+                           $("#edit_submit_btn").attr("class","btn btn-success");
+                       }
+                   }
+               }) 
+            });
+
+            $("[delete_btn]").click(function () {
+                return confirm("确认删除？");
+            })
         })
     </script>
 </head>
@@ -43,17 +68,19 @@
         <li class="active">Student</li>
     </ol>
     <div class="row">
-        <div class="col-md-6 col-md-offset-3">
+        <div class="col-md-8 col-md-offset-3">
             <a href="/student/list" class="btn btn-info">获取所有学生信息</a>
             <button type="button" class="btn btn-info" data-toggle="modal" data-target="#selectModal">根据ID查询学生信息</button>
             <button type="button" data-toggle="modal" data-target="#selectByLikeModal" class="btn btn-info">根据姓名学生信息</button>
             <button type="button" class="btn btn-info" data-toggle="modal" data-target="#addModal">添加学生信息</button>
+            <button type="button" data-toggle="modal" data-target="#editModal" class="btn btn-info">修改学生信息</button>
             <a class="btn btn-warning" href="http://localhost:8080">回到首页</a>
         </div>
     </div>
     <div class="row" th:if="${msg} ne null">
-        <div class="col-md-3 col-md-offset-4">
-            <div class="alert alert-danger text-center" role="alert" th:text="${msg.message}"> </div>
+        <div class="alert alert-danger alert-dismissible col-md-3 col-md-offset-4 text-center" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong th:text="${msg.message}"></strong>
         </div>
     </div>
     <div class="row" th:if="${students} ne null">
@@ -67,6 +94,7 @@
                                 <th>姓名</th>
                                 <th>年龄</th>
                                 <th>成绩</th>
+                                <th>操作</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -76,8 +104,7 @@
                                 <td th:text="${student.age}"></td>
                                 <td th:text="${student.score}"></td>
                                 <td id="operateCol">
-                                    <button type="button" data-toggle="modal" data-target="#editModal" class="btn btn-primary" th:attr="edit-id=${student.id}">修改</button>
-                                    <a th:href="@{/student/delete(id=${student.id})}" class="btn btn-danger">删除</a>
+                                    <a th:attr="delete_btn='true'" th:href="@{/student/delete(id=${student.id})}" class="btn btn-danger">删除</a>
                                 </td>
                             </tr>
                         </tbody>
@@ -173,7 +200,7 @@
                     <h4 class="modal-title">修改学生信息</h4>
                 </div>
                 <div class="modal-body">
-                    <form id="editForm" action="http://localhost:8080/student/insert" method="post">
+                    <form id="editForm" action="http://localhost:8080/student/update" method="post">
                         <div class="form-group">
                             <label for="addIDInput">ID</label>
                             <input type="text" class="form-control" id="editIDInput" name="id" placeholder="如：123"/>
@@ -188,9 +215,9 @@
                         </div>
                         <div class="form-group">
                             <label for="addSalaryInput">分数</label>
-                            <input type="text" class="form-control" id="editSalaryInput" name="score" placeholder="如：99"/>
+                            <input type="text" class="form-control" id="editScoreInput" name="score" placeholder="如：99"/>
                         </div>
-                        <input type="submit" value="修改" class="btn btn-success"/>
+                        <input id="edit_submit_btn" type="submit" value="修改" class="btn btn-success"/>
                     </form>
                 </div>
                 <div class="modal-footer">

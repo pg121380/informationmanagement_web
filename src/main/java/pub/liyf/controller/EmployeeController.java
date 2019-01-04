@@ -9,7 +9,6 @@ import pub.liyf.bean.JSONCheck;
 import pub.liyf.bean.Msg;
 import pub.liyf.service.EmployeeService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -21,12 +20,20 @@ public class EmployeeController {
     @RequestMapping("/employee/list")
     public String getAll(Model model){
         List<Employee> employees = employeeService.getAll();
-        model.addAttribute("employees", employees);
+        if(employees.isEmpty()){
+            model.addAttribute("msg", new Msg("数据库中还没有职工数据，请先进行增加操作！"));
+        } else {
+            model.addAttribute("employees", employees);
+        }
         return "employee";
     }
 
     @RequestMapping("/employee/getById")
     public String getEmployeeById(@RequestParam("id") String id, Model model){
+        if(id.trim().equals("")){
+            model.addAttribute("msg", new Msg("id不能为空！"));
+            return "employee";
+        }
         Employee employees = employeeService.getEmployeeById(id);
         if(employees == null){
             model.addAttribute("msg", new Msg("没有找到id为" + id + "的职工"));
@@ -38,9 +45,13 @@ public class EmployeeController {
 
     @RequestMapping("/employee/getByLike")
     public String getEmployeeByLike(@RequestParam("partOfName") String partOfName, Model model){
+        if(partOfName.trim().equals("")){
+            model.addAttribute("msg", new Msg("名字不能为空！"));
+            return "employee";
+        }
         List<Employee> employees = employeeService.getEmployeeByLike(partOfName);
         if(employees.isEmpty()){
-            model.addAttribute("msg", new Msg("没有找到名字中带有" + partOfName + "的学生"));
+            model.addAttribute("msg", new Msg("没有找到名字中带有" + partOfName + "的职工！"));
         }
         model.addAttribute("employees", employees);
         return "employee";
@@ -48,6 +59,14 @@ public class EmployeeController {
 
     @RequestMapping("/employee/insert")
     public String insert(Employee employee, Model model){
+        if(employee.getId().trim().equals("")){
+            model.addAttribute("msg", new Msg("id不能为空！"));
+            return "employee";
+        }
+        if(employeeService.getEmployeeById(employee.getId()) != null){
+            model.addAttribute("msg", new Msg("输入的id已重复！"));
+            return "employee";
+        }
         employeeService.insert(employee);
         List<Employee> list = employeeService.getAll();
         model.addAttribute("employees", list);
@@ -83,6 +102,17 @@ public class EmployeeController {
             return new JSONCheck(id + "1", id);
         } else {
             return new JSONCheck(employee.getId(), id);
+        }
+    }
+
+    @RequestMapping("/employee/showBack")
+    @ResponseBody
+    public Employee AjaxShowBack(@RequestParam("id") String id){
+        Employee employee = employeeService.getEmployeeById(id);
+        if (employee == null){
+            return new Employee(id, "此姓名不存在！！！！！！！", 0, 0.0,"");
+        } else {
+            return employee;
         }
     }
 }
