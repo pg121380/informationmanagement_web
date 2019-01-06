@@ -1,4 +1,4 @@
-package pub.liyf.service;
+package pub.liyf.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
